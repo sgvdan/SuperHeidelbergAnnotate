@@ -6,19 +6,19 @@ import argparse
 
 from util import listdir_fullpath, flatten_nan, glob_re, dir_path, find_file
 
-# TODO:  Figure out correct mapping from Heidelberg's layer segmentation to BOE Chiu's
 sa_classId = {
-    "GCL": -1, "PR2": -1,  # Not supported
     "ILM": 1,
-    "NFL": 2, "RNFL": 2,
-    "IPL": 3,
-    "INL": 4,
-    "OPL": 5,
-    "ONL": 6, "ELM": 6,
-    "ISM": 7, "PR1": 7,
-    "OS": 8, "RPE": 8,
-    "BM": 9,
-    "FLUID": 10
+    "RNFL": 2,
+    "GCL": 3,
+    "IPL": 4,
+    "INL": 5,
+    "OPL": 6,
+    "ELM": 7,
+    "PR1": 8,
+    "PR2": 9,
+    "RPE": 10,
+    "BM": 11,
+    "FLUID": 12
 }
 
 
@@ -35,8 +35,9 @@ def parse_annot_xml(path):
         assert len(node.childNodes) == 1, f"{node.tagName} should have only 1 data node"
         data = node.firstChild.data
         assert type(data) == str
-        parsed_data = [(x, float(y)) for x, y in enumerate(data.split(" ")[:-1])]
-        slice_annotations[node.tagName] = parsed_data
+        parsed_data = [(x, float(y)) for x, y in enumerate(data.split(" ")[:-1]) if y != 'nan']
+        if len(parsed_data) > 2:
+            slice_annotations[node.tagName] = parsed_data
 
     return slice_annotations
 
